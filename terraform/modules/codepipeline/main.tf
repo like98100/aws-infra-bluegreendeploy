@@ -147,7 +147,7 @@ resource "aws_codedeploy_deployment_group" "main" {
   })
 }
 
-# CodePipeline
+# CodePipeline - CodeStar Connections 방식
 resource "aws_codepipeline" "main" {
   name     = "${var.project_name}-${var.environment}-pipeline"
   role_arn = aws_iam_role.codepipeline_role.arn
@@ -163,15 +163,16 @@ resource "aws_codepipeline" "main" {
     action {
       name             = "Source"
       category         = "Source"
-      owner            = "ThirdParty"
-      provider         = "GitHubV2"
+      owner            = "AWS"
+      provider         = "CodeStarSourceConnection"
       version          = "1"
       output_artifacts = ["source_output"]
 
       configuration = {
+        ConnectionArn    = var.github_connection_arn
         FullRepositoryId = var.github_repo
-        Branch = var.github_branch
-        ConnectionArn  = var.github_connection_arn
+        BranchName       = var.github_branch
+        OutputArtifactFormat = "CODE_ZIP"
       }
     }
   }
@@ -278,6 +279,13 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
           "codedeploy:RegisterApplicationRevision"
         ]
         Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "codestar-connections:UseConnection"
+        ]
+        Resource = var.github_connection_arn
       }
     ]
   })
