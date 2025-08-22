@@ -101,7 +101,7 @@ resource "aws_codedeploy_deployment_group" "main" {
   deployment_group_name = "${var.project_name}-${var.environment}-dg"
   service_role_arn      = aws_iam_role.codedeploy_role.arn
 
-  deployment_config_name = "CodeDeployDefault.ECSAllAtOnceBlueGreen"
+  deployment_config_name = "CodeDeployDefault.ECSCanary10Percent5Minutes"
 
   deployment_style {
     deployment_type   = "BLUE_GREEN"
