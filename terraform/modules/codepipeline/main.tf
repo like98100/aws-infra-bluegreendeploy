@@ -366,7 +366,27 @@ resource "aws_iam_role" "codedeploy_role" {
   tags = var.tags
 }
 
-resource "aws_iam_role_policy_attachment" "codedeploy_role_policy" {
-  role       = aws_iam_role.codedeploy_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRoleForECS"
+resource "aws_iam_role_policy" "codedeploy_custom_policy" {
+  name = "${var.project_name}-${var.environment}-codedeploy-custom-policy"
+  role = aws_iam_role.codedeploy_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Action = [
+          "ecs:DescribeServices",
+          "ecs:UpdateService",
+          "elasticloadbalancing:DescribeTargetGroups",
+          "elasticloadbalancing:DescribeListeners",
+          "elasticloadbalancing:ModifyListener",
+          "elasticloadbalancing:DescribeRules",
+          "elasticloadbalancing:ModifyRule",
+          "codedeploy:*"
+        ],
+        Resource = "*"
+      }
+    ]
+  })
 }
