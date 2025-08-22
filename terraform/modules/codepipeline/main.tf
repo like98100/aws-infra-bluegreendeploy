@@ -85,6 +85,21 @@ resource "aws_codebuild_project" "main" {
   })
 }
 
+# CloudWatch Log Groups
+resource "aws_cloudwatch_log_group" "codebuild" {
+  name              = "/aws/codebuild/${var.project_name}-${var.environment}-build"
+  retention_in_days = 7
+
+  tags = merge(var.tags, {
+    Name = "${var.project_name}-${var.environment}-codebuild-logs"
+  })
+}
+
+data "aws_cloudwatch_log_group" "ecs_task" {
+  name = "/ecs/${var.project_name}-${var.environment}"
+}
+
+
 # CodeDeploy Application
 resource "aws_codedeploy_app" "main" {
   compute_platform = "ECS"
@@ -286,6 +301,28 @@ resource "aws_iam_role_policy" "codepipeline_policy" {
           "codestar-connections:UseConnection"
         ]
         Resource = var.github_connection_arn
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "ecs:RegisterTaskDefinition",
+          "ecs:DescribeTaskDefinition",
+          "ecs:DescribeServices",
+          "ecs:UpdateService",
+          "ecs:ListTasks",
+          "ecs:DescribeTasks"
+        ]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "iam:PassRole"
+        ]
+        Resource = [
+          "arn:aws:iam::${var.account_id}:role/*ecs-execution-role*",
+          "arn:aws:iam::${var.account_id}:role/*ecs-task-role*"
+        ]
       }
     ]
   })
@@ -324,7 +361,10 @@ resource "aws_iam_role_policy" "codebuild_policy" {
           "logs:CreateLogStream",
           "logs:PutLogEvents"
         ]
-        Resource = "arn:aws:logs:*:*:*"
+        Resource = [
+          "arn:aws:logs:${var.region}:${var.account_id}:log-group:/aws/codebuild/${var.project_name}-${var.environment}-build",
+          "arn:aws:logs:${var.region}:${var.account_id}:log-group:/aws/codebuild/${var.project_name}-${var.environment}-build:*"
+        ]
       },
       {
         Effect = "Allow"
