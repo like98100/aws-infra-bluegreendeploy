@@ -118,13 +118,8 @@ resource "aws_codedeploy_deployment_group" "main" {
       action                         = "TERMINATE"
       termination_wait_time_in_minutes = 5
     }
-
     deployment_ready_option {
       action_on_timeout = "CONTINUE_DEPLOYMENT"
-    }
-
-    green_fleet_provisioning_option {
-      action = "COPY_AUTO_SCALING_GROUP"
     }
   }
 
@@ -134,8 +129,16 @@ resource "aws_codedeploy_deployment_group" "main" {
   }
 
   load_balancer_info {
-    target_group_info {
-      name = var.target_group_blue_name
+    target_group_pair_info {
+      prod_traffic_route {
+        listener_arns = [var.alb_listener_arn]
+      }
+      target_group {
+        name = var.target_group_blue_name
+      }
+      target_group {
+        name = var.target_group_green_name
+      }
     }
   }
 
