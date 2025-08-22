@@ -428,14 +428,30 @@ resource "aws_iam_role_policy" "codedeploy_custom_policy" {
         Action = [
           "ecs:DescribeServices",
           "ecs:UpdateService",
+          "ecs:CreateTaskSet",
+          "ecs:UpdateTaskSet",
+          "ecs:DeleteTaskSet",
+          "ecs:DescribeTaskSets",
+          "ecs:DescribeTaskDefinition",
           "elasticloadbalancing:DescribeTargetGroups",
           "elasticloadbalancing:DescribeListeners",
           "elasticloadbalancing:ModifyListener",
           "elasticloadbalancing:DescribeRules",
           "elasticloadbalancing:ModifyRule",
+          "elasticloadbalancing:DescribeTargetHealth",
           "codedeploy:*"
         ],
         Resource = "*"
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "iam:PassRole"
+        ],
+        Resource = [
+          "arn:aws:iam::${var.account_id}:role/*ecs-execution-role*",
+          "arn:aws:iam::${var.account_id}:role/*ecs-task-role*"
+        ]
       }
     ]
   })
