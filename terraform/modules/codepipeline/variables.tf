@@ -18,6 +18,11 @@ variable "github_branch" {
   type        = string
 }
 
+variable "github_connection_arn" {
+  description = "AWS CodeStar Connections ARN for GitHub App"
+  type        = string
+}
+
 variable "github_token_secret" {
   description = "AWS Secrets Manager secret name containing GitHub token"
   type        = string

@@ -46,6 +46,12 @@ variable "github_branch" {
   default     = "main"
 }
 
+variable "github_connection_arn" {
+  description = "AWS CodeStar Connections ARN for GitHub App"
+  type        = string
+  default     = "arn:aws:codeconnections:ap-northeast-2:077672914621:connection/5c0df156-ff09-44af-aff4-459644152712"
+}
+
 variable "github_token_secret" {
   description = "AWS Secrets Manager secret name containing GitHub token"
   type        = string

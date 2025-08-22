@@ -91,6 +91,7 @@ module "codepipeline" {
   
   github_repo           = var.github_repo
   github_branch         = var.github_branch
+  github_connection_arn = var.github_connection_arn
   github_token_secret   = var.github_token_secret
   
   ecr_repository_name   = module.ecr.repository_name

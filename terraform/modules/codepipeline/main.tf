@@ -164,15 +164,14 @@ resource "aws_codepipeline" "main" {
       name             = "Source"
       category         = "Source"
       owner            = "ThirdParty"
-      provider         = "GitHub"
+      provider         = "GitHubV2"
       version          = "1"
       output_artifacts = ["source_output"]
 
       configuration = {
-        Owner  = split("/", var.github_repo)[0]
-        Repo   = split("/", var.github_repo)[1]
+        FullRepositoryId = var.github_repo
         Branch = var.github_branch
-        OAuthToken = "{{resolve:secretsmanager:${var.github_token_secret}:SecretString:token}}"
+        ConnectionArn  = var.github_connection_arn
       }
     }
   }
