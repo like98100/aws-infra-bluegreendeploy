@@ -49,7 +49,12 @@ variable "ecs_service_name" {
 }
 
 variable "alb_listener_arn" {
-  description = "ALB listener ARN"
+  description = "ALB listener ARN for Blue/Green deployment"
+  type        = string
+}
+
+variable "alb_test_listener_arn" {
+  description = "ALB test listener ARN for Blue/Green deployment"
   type        = string
 }
 

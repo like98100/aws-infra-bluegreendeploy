@@ -96,16 +96,16 @@ resource "aws_cloudwatch_log_group" "codebuild" {
 }
 
 # 로그 그룹이 있을 때
-# data "aws_cloudwatch_log_group" "ecs_task" {
-#   name = "/ecs/${var.project_name}-${var.environment}"
-# }
+data "aws_cloudwatch_log_group" "ecs_task" {
+  name = "/ecs/${var.project_name}-${var.environment}"
+}
 
 # 로그 그룹이 없을 때
-resource "aws_cloudwatch_log_group" "ecs_task" {
-  name              = "/ecs/${var.project_name}-${var.environment}"
-  retention_in_days = 7
-  tags              = var.tags
-}
+# resource "aws_cloudwatch_log_group" "ecs_task" {
+#   name              = "/ecs/${var.project_name}-${var.environment}"
+#   retention_in_days = 7
+#   tags              = var.tags
+# }
 
 
 # CodeDeploy Application
@@ -155,6 +155,9 @@ resource "aws_codedeploy_deployment_group" "main" {
     target_group_pair_info {
       prod_traffic_route {
         listener_arns = [var.alb_listener_arn]
+      }
+      test_traffic_route {
+        listener_arns = [var.alb_test_listener_arn]
       }
       target_group {
         name = var.target_group_blue_name
@@ -422,6 +425,12 @@ resource "aws_iam_role" "codedeploy_role" {
   })
 
   tags = var.tags
+}
+
+# CodeDeploy Role에 AWS 관리형 정책 추가
+resource "aws_iam_role_policy_attachment" "codedeploy_role_policy" {
+  role       = aws_iam_role.codedeploy_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AWSCodeDeployRoleForECS"
 }
 
 resource "aws_iam_role_policy" "codedeploy_custom_policy" {

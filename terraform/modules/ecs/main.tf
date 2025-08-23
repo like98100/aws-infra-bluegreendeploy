@@ -105,7 +105,9 @@ resource "aws_ecs_service" "main" {
     container_port   = var.container_port
   }
 
-  depends_on = [aws_iam_role_policy_attachment.ecs_execution_role_policy]
+  depends_on = [
+    aws_iam_role_policy_attachment.ecs_execution_role_policy
+  ]
 
   tags = merge(var.tags, {
     Name = "${var.project_name}-${var.environment}-service"

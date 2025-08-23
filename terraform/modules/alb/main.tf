@@ -24,9 +24,9 @@ resource "aws_lb_target_group" "blue" {
   health_check {
     enabled             = true
     healthy_threshold   = 2
-    unhealthy_threshold = 2
-    timeout             = 5
-    interval            = 30
+    unhealthy_threshold = 5
+    timeout             = 10
+    interval            = 15
     path                = "/health"
     matcher             = "200"
     protocol            = "HTTP"
@@ -49,9 +49,9 @@ resource "aws_lb_target_group" "green" {
   health_check {
     enabled             = true
     healthy_threshold   = 2
-    unhealthy_threshold = 2
-    timeout             = 5
-    interval            = 30
+    unhealthy_threshold = 5
+    timeout             = 10
+    interval            = 15
     path                = "/health"
     matcher             = "200"
     protocol            = "HTTP"
@@ -77,6 +77,10 @@ resource "aws_lb_listener" "main" {
   tags = merge(var.tags, {
     Name = "${var.project_name}-${var.environment}-listener"
   })
+
+    lifecycle {
+    ignore_changes = [default_action]
+  }
 }
 
 # Test Listener for Blue/Green deployment
@@ -93,4 +97,8 @@ resource "aws_lb_listener" "test" {
   tags = merge(var.tags, {
     Name = "${var.project_name}-${var.environment}-test-listener"
   })
+
+  lifecycle {
+  ignore_changes = [default_action]
+  }
 }
