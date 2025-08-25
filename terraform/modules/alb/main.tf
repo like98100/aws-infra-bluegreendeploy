@@ -28,7 +28,7 @@ resource "aws_lb_target_group" "blue" {
     timeout             = 10
     interval            = 15
     path                = "/"
-    matcher             = "200, 404, 302"
+    matcher             = "200,404,302"
     protocol            = "HTTP"
     port                = "traffic-port"
   }
@@ -53,7 +53,7 @@ resource "aws_lb_target_group" "green" {
     timeout             = 10
     interval            = 15
     path                = "/"
-    matcher             = "200, 404, 302"
+    matcher             = "200,404,302"
     protocol            = "HTTP"
     port                = "traffic-port"
   }
