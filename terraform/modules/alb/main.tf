@@ -31,7 +31,6 @@ resource "aws_lb_target_group" "blue" {
     matcher             = "200"
     protocol            = "HTTP"
     port                = "traffic-port"
-    grace_period_seconds = 300  # Blue/Green 배포를 위한 추가 시간
   }
 
   tags = merge(var.tags, {
@@ -57,7 +56,6 @@ resource "aws_lb_target_group" "green" {
     matcher             = "200"
     protocol            = "HTTP"
     port                = "traffic-port"
-    grace_period_seconds = 300  # Blue/Green 배포를 위한 추가 시간
   }
 
   tags = merge(var.tags, {
