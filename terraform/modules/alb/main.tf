@@ -15,10 +15,10 @@ resource "aws_lb" "main" {
 
 # Target Group Blue
 resource "aws_lb_target_group" "blue" {
-  name     = "${var.project_name}-${var.environment}-blue-tg"
-  port     = 8080
-  protocol = "HTTP"
-  vpc_id   = var.vpc_id
+  name        = "${var.project_name}-${var.environment}-blue-tg"
+  port        = 8080
+  protocol    = "HTTP"
+  vpc_id      = var.vpc_id
   target_type = "ip"
 
   health_check {
@@ -31,6 +31,7 @@ resource "aws_lb_target_group" "blue" {
     matcher             = "200"
     protocol            = "HTTP"
     port                = "traffic-port"
+    grace_period_seconds = 300  # Blue/Green 배포를 위한 추가 시간
   }
 
   tags = merge(var.tags, {
@@ -40,10 +41,10 @@ resource "aws_lb_target_group" "blue" {
 
 # Target Group Green
 resource "aws_lb_target_group" "green" {
-  name     = "${var.project_name}-${var.environment}-green-tg"
-  port     = 8080
-  protocol = "HTTP"
-  vpc_id   = var.vpc_id
+  name        = "${var.project_name}-${var.environment}-green-tg"
+  port        = 8080
+  protocol    = "HTTP"
+  vpc_id      = var.vpc_id
   target_type = "ip"
 
   health_check {
@@ -56,6 +57,7 @@ resource "aws_lb_target_group" "green" {
     matcher             = "200"
     protocol            = "HTTP"
     port                = "traffic-port"
+    grace_period_seconds = 300  # Blue/Green 배포를 위한 추가 시간
   }
 
   tags = merge(var.tags, {
@@ -63,22 +65,38 @@ resource "aws_lb_target_group" "green" {
   })
 }
 
-# ALB Listener
+# ALB Listener - Blue/Green 배포용으로 수정
 resource "aws_lb_listener" "main" {
   load_balancer_arn = aws_lb.main.arn
   port              = "80"
   protocol          = "HTTP"
 
   default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.blue.arn
+    type = "forward"
+    
+    forward {
+      target_group {
+        arn    = aws_lb_target_group.blue.arn
+        weight = 100
+      }
+      
+      target_group {
+        arn    = aws_lb_target_group.green.arn
+        weight = 0
+      }
+      
+      stickiness {
+        enabled  = false
+        duration = 1
+      }
+    }
   }
 
   tags = merge(var.tags, {
     Name = "${var.project_name}-${var.environment}-listener"
   })
 
-    lifecycle {
+  lifecycle {
     ignore_changes = [default_action]
   }
 }
@@ -90,8 +108,19 @@ resource "aws_lb_listener" "test" {
   protocol          = "HTTP"
 
   default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.green.arn
+    type = "forward"
+    
+    forward {
+      target_group {
+        arn    = aws_lb_target_group.green.arn
+        weight = 100
+      }
+      
+      stickiness {
+        enabled  = false
+        duration = 1
+      }
+    }
   }
 
   tags = merge(var.tags, {
@@ -99,6 +128,6 @@ resource "aws_lb_listener" "test" {
   })
 
   lifecycle {
-  ignore_changes = [default_action]
+    ignore_changes = [default_action]
   }
 }
