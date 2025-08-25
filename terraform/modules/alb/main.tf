@@ -27,8 +27,8 @@ resource "aws_lb_target_group" "blue" {
     unhealthy_threshold = 5
     timeout             = 10
     interval            = 15
-    path                = "/actuator/health"
-    matcher             = "200"
+    path                = "/"
+    matcher             = "200, 404, 302"
     protocol            = "HTTP"
     port                = "traffic-port"
   }
@@ -52,8 +52,8 @@ resource "aws_lb_target_group" "green" {
     unhealthy_threshold = 5
     timeout             = 10
     interval            = 15
-    path                = "/actuator/health"
-    matcher             = "200"
+    path                = "/"
+    matcher             = "200, 404, 302"
     protocol            = "HTTP"
     port                = "traffic-port"
   }
