@@ -96,16 +96,16 @@ resource "aws_cloudwatch_log_group" "codebuild" {
 }
 
 # 로그 그룹이 있을 때
-data "aws_cloudwatch_log_group" "ecs_task" {
-  name = "/ecs/${var.project_name}-${var.environment}"
-}
+# data "aws_cloudwatch_log_group" "ecs_task" {
+#   name = "/ecs_task/${var.project_name}-${var.environment}"
+# }
 
 # 로그 그룹이 없을 때
-# resource "aws_cloudwatch_log_group" "ecs_task" {
-#   name              = "/ecs/${var.project_name}-${var.environment}"
-#   retention_in_days = 7
-#   tags              = var.tags
-# }
+resource "aws_cloudwatch_log_group" "ecs_task" {
+  name              = "/ecs_task/${var.project_name}-${var.environment}"
+  retention_in_days = 7
+  tags              = var.tags
+}
 
 
 # CodeDeploy Application
