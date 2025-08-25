@@ -1,7 +1,10 @@
-# ECR Repository
+# ECR Repository with force delete option
 resource "aws_ecr_repository" "main" {
   name                 = "${var.project_name}-${var.environment}"
   image_tag_mutability = "MUTABLE"
+  
+  # 이 옵션을 추가하면 이미지가 있어도 강제로 삭제됩니다
+  force_delete = true
 
   image_scanning_configuration {
     scan_on_push = true

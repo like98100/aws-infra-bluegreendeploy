@@ -2,6 +2,8 @@
 resource "aws_s3_bucket" "codepipeline_artifacts" {
   bucket = "${var.project_name}-${var.environment}-codepipeline-artifacts-${random_id.bucket_suffix.hex}"
 
+  force_destroy = true
+  
   tags = merge(var.tags, {
     Name = "${var.project_name}-${var.environment}-codepipeline-artifacts"
   })
