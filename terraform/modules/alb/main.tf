@@ -24,11 +24,11 @@ resource "aws_lb_target_group" "blue" {
   health_check {
     enabled             = true
     healthy_threshold   = 2
-    unhealthy_threshold = 5
-    timeout             = 10
-    interval            = 15
-    path                = "/"
-    matcher             = "200,404,302"
+    unhealthy_threshold = 3
+    timeout             = 30
+    interval            = 60
+    path                = "/actuator/health"
+    matcher             = "200,302"
     protocol            = "HTTP"
     port                = "traffic-port"
   }
@@ -49,11 +49,11 @@ resource "aws_lb_target_group" "green" {
   health_check {
     enabled             = true
     healthy_threshold   = 2
-    unhealthy_threshold = 5
-    timeout             = 10
-    interval            = 15
-    path                = "/"
-    matcher             = "200,404,302"
+    unhealthy_threshold = 3
+    timeout             = 30
+    interval            = 60
+    path                = "/actuator/health"
+    matcher             = "200,302"
     protocol            = "HTTP"
     port                = "traffic-port"
   }
