@@ -91,6 +91,8 @@ resource "aws_ecs_service" "main" {
   desired_count   = var.desired_count
   launch_type     = "FARGATE"
 
+  health_check_grace_period_seconds = 300
+  
   deployment_controller {
     type = "CODE_DEPLOY"
   }
